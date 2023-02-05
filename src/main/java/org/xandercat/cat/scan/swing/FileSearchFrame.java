@@ -25,6 +25,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xandercat.cat.scan.filter.FileSearchFilter;
 import org.xandercat.cat.scan.filter.SearchFilter;
+import org.xandercat.cat.scan.filter.SearchFilterFactory;
 import org.xandercat.cat.scan.media.Icons;
 import org.xandercat.swing.app.ApplicationFrame;
 import org.xandercat.swing.util.PlatformTool;
@@ -85,8 +86,8 @@ public class FileSearchFrame extends ApplicationFrame {
 		JPanel inputPanel = new JPanel(new BorderLayout());
 		this.inputPane = new JTabbedPane(JTabbedPane.TOP);
 		this.inputPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
-//		List<Class<? extends FileSearchFilter>> filterClasses = SearchFilterFactory.getDefaultFilterClasses();
-//		for (Class<? extends FileSearchFilter> filterClass : filterClasses) {
+		List<Class<? extends FileSearchFilter>> filterClasses = SearchFilterFactory.getDefaultFilterClasses();
+		for (Class<? extends FileSearchFilter> filterClass : filterClasses) {
 //			try {
 //				SearchFilterPanel panel = SearchFilterPanelFactory.newSearchFilterPanel(filterClass);
 //				this.searchFilterPanels.add(panel);
@@ -96,7 +97,7 @@ public class FileSearchFrame extends ApplicationFrame {
 //			} catch (InputException ie) {
 //				log.error("Unable to add filter of type " + filterClass.getName(), ie);
 //			}
-//		}
+		}
 		inputPanel.add(inputPane, BorderLayout.CENTER);
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new GridLayout(1, 3));
