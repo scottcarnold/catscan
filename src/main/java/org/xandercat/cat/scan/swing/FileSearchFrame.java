@@ -38,12 +38,12 @@ public class FileSearchFrame extends ApplicationFrame {
 	
 	private JTabbedPane inputPane;
 	private JTabbedPane resultTabbedPane;
-//	private List<SearchFilterPanel> searchFilterPanels = new ArrayList<SearchFilterPanel>();
+	private List<SearchFilterPanel> searchFilterPanels = new ArrayList<SearchFilterPanel>();
 	
 	private Executor executor;
 	
-	public FileSearchFrame() {
-		super();
+	public FileSearchFrame(String appName, String appVersion) {
+		super(appName, appVersion);
 		if (PlatformTool.isWindows()) {
 			setIconImage(Icons.CATSCAN_ICON.getImage());
 		}
@@ -61,7 +61,7 @@ public class FileSearchFrame extends ApplicationFrame {
 		this.searchButton = new JButton("Search");
 		this.searchButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
-//				SearchFilterPanel searchPanel = searchFilterPanels.get(inputPane.getSelectedIndex());
+				SearchFilterPanel searchPanel = searchFilterPanels.get(inputPane.getSelectedIndex());
 //				InputProcessor inputProcessor = searchPanel.getInputProcessor();
 //				if (inputProcessor.validateAndCommit()) {
 //					FileSearchFilter filter = SearchFilterFactory.newFilter(searchPanel.getFilter());
@@ -105,8 +105,8 @@ public class FileSearchFrame extends ApplicationFrame {
 		searchButtonPanel.add(this.searchButton);
 		buttonPanel.add(searchButtonPanel);
 		JPanel versionPanel = new JPanel(new BorderLayout());
-//		JLabel versionLabel = new VersionLabel(getVersionHistory());
-//		versionPanel.add(versionLabel, BorderLayout.EAST);
+		JLabel versionLabel = new JLabel(getApplicationName() + " " + getApplicationVersion());
+		versionPanel.add(versionLabel, BorderLayout.EAST);
 		buttonPanel.add(versionPanel);
 		inputPanel.add(buttonPanel, BorderLayout.SOUTH);
 		getRootPane().setDefaultButton(this.searchButton);

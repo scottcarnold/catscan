@@ -18,10 +18,12 @@ import org.xandercat.swing.util.PlatformTool;
 public class CatScan {
 
 	private static final Logger log = LogManager.getLogger(CatScan.class);
+	private static final String APPLICATION_NAME = "CatScan";
+	private static final String APPLICATION_VERSION = "1.1";
 	
 	public static void main(String[] args) {
 		LoggingUtil.configureLoggingToConsole();
-		log.info("CatScan version ?");
+		log.info(APPLICATION_NAME + " " + APPLICATION_VERSION);
 		if (!PlatformTool.isMac()) {
 			for (LookAndFeelInfo lafInfo : UIManager.getInstalledLookAndFeels()) {
 				if ("Nimbus".equals(lafInfo.getName())) {
@@ -34,7 +36,7 @@ public class CatScan {
 				}
 			}
 		}
-		PlatformTool.setApplicationNameOnMac("CatScan");
+		PlatformTool.setApplicationNameOnMac(APPLICATION_NAME);
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				launchUI();
@@ -43,7 +45,7 @@ public class CatScan {
 	}
 	
 	private static void launchUI() {
-		FileSearchFrame frame = new FileSearchFrame();
+		FileSearchFrame frame = new FileSearchFrame(APPLICATION_NAME, APPLICATION_VERSION);
 		frame.setVisible(true);
 	}
 }
