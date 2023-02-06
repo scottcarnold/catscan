@@ -3,7 +3,6 @@ package org.xandercat.cat.scan.filter;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -11,9 +10,9 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-//import org.apache.log4j.Logger;
 import org.xandercat.cat.scan.result.MatchResultNode;
 import org.xandercat.swing.util.FileUtil;
+import org.xandercat.swing.zenput.annotation.InputField;
 
 /**
  * Search filter for finding files by file name.  Name patterns should be Operating
@@ -24,9 +23,9 @@ import org.xandercat.swing.util.FileUtil;
  */
 public class FileNameSearchFilter extends ZipSearchFilter {
 
-	//private static final Logger log = Logger.getLogger(FileNameSearchFilter.class);
+	@InputField(title="File Name(s)")
+	private String namePatterns;
 	
-	private final List<String> namePatterns = new ArrayList<String>();
 	private final List<Pattern> nameRegExPatterns = new ArrayList<Pattern>();
 	
 	public FileNameSearchFilter() {
@@ -38,10 +37,8 @@ public class FileNameSearchFilter extends ZipSearchFilter {
 	 * 
 	 * @return		name patterns
 	 */
-	public List<String> getNamePatterns() {
-		List<String> copy = new ArrayList<String>();
-		copy.addAll(namePatterns);
-		return copy;
+	public String getNamePatterns() {
+		return namePatterns;
 	}
 
 	/**
@@ -49,20 +46,16 @@ public class FileNameSearchFilter extends ZipSearchFilter {
 	 * 
 	 * @param namePatterns
 	 */
-	public void setNamePatterns(List<String> namePatterns) {
-		this.namePatterns.clear();
+	public void setNamePatterns(String namePatterns) {
+		this.namePatterns = namePatterns;
 		this.nameRegExPatterns.clear();
-		this.namePatterns.addAll(namePatterns);
-		for (String namePattern : this.namePatterns) {
+		String[] individualPatterns = namePatterns.split(",");
+		for (String namePattern : individualPatterns) {
 			String regEx = FileUtil.generateRegularExpression(namePattern.toLowerCase());
 			this.nameRegExPatterns.add(Pattern.compile(regEx));
 		}
 	}
 
-	public void setNamePatterns(String... namePatterns) {
-		setNamePatterns(Arrays.asList(namePatterns));
-	}
-	
 	private boolean matches(String fileName) {
 		fileName = fileName.toLowerCase();
 		for (Pattern namePattern : this.nameRegExPatterns) {
@@ -116,7 +109,7 @@ public class FileNameSearchFilter extends ZipSearchFilter {
 	@Override
 	public Map<String, String> getSearchCriteria() {
 		Map<String, String> searchCriteria = super.getSearchCriteria();
-		searchCriteria.put("File Name Pattern(s)", getCSVString(namePatterns));
+		searchCriteria.put("File Name Pattern(s)", namePatterns);
 		return searchCriteria;
 	}
 	

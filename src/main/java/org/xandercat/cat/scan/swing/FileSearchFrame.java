@@ -29,6 +29,7 @@ import org.xandercat.cat.scan.filter.SearchFilterFactory;
 import org.xandercat.cat.scan.media.Icons;
 import org.xandercat.swing.app.ApplicationFrame;
 import org.xandercat.swing.util.PlatformTool;
+import org.xandercat.swing.zenput.error.ZenputException;
 
 public class FileSearchFrame extends ApplicationFrame {
 	
@@ -88,15 +89,15 @@ public class FileSearchFrame extends ApplicationFrame {
 		this.inputPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 		List<Class<? extends FileSearchFilter>> filterClasses = SearchFilterFactory.getDefaultFilterClasses();
 		for (Class<? extends FileSearchFilter> filterClass : filterClasses) {
-//			try {
-//				SearchFilterPanel panel = SearchFilterPanelFactory.newSearchFilterPanel(filterClass);
-//				this.searchFilterPanels.add(panel);
-//				JScrollPane scrollPane = new JScrollPane(panel);
-//				scrollPane.getVerticalScrollBar().setUnitIncrement(5);
-//				inputPane.addTab(panel.getFilter().getName(), scrollPane);
-//			} catch (InputException ie) {
-//				log.error("Unable to add filter of type " + filterClass.getName(), ie);
-//			}
+			try {
+				SearchFilterPanel panel = SearchFilterPanelFactory.newSearchFilterPanel(filterClass);
+				this.searchFilterPanels.add(panel);
+				JScrollPane scrollPane = new JScrollPane(panel);
+				scrollPane.getVerticalScrollBar().setUnitIncrement(5);
+				inputPane.addTab(panel.getFilter().getName(), scrollPane);
+			} catch (ZenputException ie) {
+				log.error("Unable to add filter of type " + filterClass.getName(), ie);
+			}
 		}
 		inputPanel.add(inputPane, BorderLayout.CENTER);
 		JPanel buttonPanel = new JPanel();

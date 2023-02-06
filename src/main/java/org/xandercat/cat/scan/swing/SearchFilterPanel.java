@@ -15,23 +15,20 @@ import javax.swing.SpringLayout;
 
 import org.xandercat.cat.scan.filter.FileSearchFilter;
 import org.xandercat.swing.util.SpringUtilities;
-//import org.xandercat.common.ui.xinput.CommitMode;
-//import org.xandercat.common.ui.xinput.InputException;
-//import org.xandercat.common.ui.xinput.InputProcessor;
-//import org.xandercat.common.ui.xinput.MultiSource;
-//import org.xandercat.common.ui.xinput.adapter.InputAdapter;
-//import org.xandercat.common.ui.xinput.adapter.ReflectionAdapter;
-//import org.xandercat.common.ui.xinput.handler.FileHandler;
-//import org.xandercat.common.ui.xinput.validator.FileValidator;
-
+import org.xandercat.swing.zenput.annotation.InputField;
+import org.xandercat.swing.zenput.annotation.ValidateFile;
+import org.xandercat.swing.zenput.annotation.ValidateFile.Mode;
+import org.xandercat.swing.zenput.annotation.ValidateRequired;
+import org.xandercat.swing.zenput.error.ZenputException;
+import org.xandercat.swing.zenput.processor.CommitMode;
+import org.xandercat.swing.zenput.processor.InputProcessor;
+import org.xandercat.swing.zenput.processor.SourceProcessor;
 
 /**
  * Panel for setting search parameters for a search filter.  An input for the 
  * search directory is automatically added.  Other search parameter inputs
  * must be added using the addInput(...) method.  Once all inputs are added,
  * a call to the finish() method is required to finish the panel layout.
- * 
- * Inputs are handled using the XInput framework.
  * 
  * @author Scott Arnold
  */
@@ -41,19 +38,23 @@ public class SearchFilterPanel extends JPanel {
 	
 	private int inputCount;
 	private JPanel inputPanel;
-//	private InputProcessor inputProcessor;
+	
+	@InputField(title="Directory")
+	@ValidateFile(mode=Mode.DIRECTORIES_ONLY, exists=true)
+	@ValidateRequired
 	private File directory;
+	
 	private JTextField directoryField;
 	private JFileChooser directoryChooser;
 	private FileSearchFilter filter;
-//	private MultiSource source;
+	private InputProcessor inputProcessor;
 	
-	public SearchFilterPanel(FileSearchFilter filter) {
+	public SearchFilterPanel(FileSearchFilter filter) throws ZenputException {
 		super(new BorderLayout());
 		this.inputPanel = new JPanel(new SpringLayout());
 		this.filter = filter;
-//		this.source = new MultiSource(this, filter);
-//		this.inputProcessor = new InputProcessor(this.source, CommitMode.COMMIT_ALL);
+		SourceProcessor sourceProcessor = new SourceProcessor(filter, this);
+		this.inputProcessor = new InputProcessor(sourceProcessor, CommitMode.COMMIT_ALL, true);
 		JPanel directoryPanel = new JPanel(new BorderLayout());
 		this.directoryField = new JTextField();
 		directoryPanel.add(this.directoryField, BorderLayout.CENTER);
@@ -69,10 +70,7 @@ public class SearchFilterPanel extends JPanel {
 			}
 		});
 		directoryPanel.add(selectButton, BorderLayout.EAST);
-//		InputAdapter<String> directoryAdapter = new ReflectionAdapter<String>(
-//				this.directoryField, "text", String.class);
-//		FileHandler directoryHandler = new FileHandler(inputProcessor, "directory", "Directory", directoryAdapter);
-//		directoryHandler.setValidator(new FileValidator(FileValidator.DIRECTORIES_ONLY, true, true));
+		this.inputProcessor.registerInput("directory", directoryField);
 		addInput("Directory", directoryPanel);
 	}
 	
@@ -88,9 +86,9 @@ public class SearchFilterPanel extends JPanel {
 		return filter;
 	}
 
-//	public InputProcessor getInputProcessor() {
-//		return inputProcessor;
-//	}
+	public InputProcessor getInputProcessor() {
+		return inputProcessor;
+	}
 	
 	/**
 	 * Add a search parameter input to the panel.

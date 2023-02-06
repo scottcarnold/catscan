@@ -15,6 +15,9 @@ import org.xandercat.cat.scan.result.MatchResultNode;
 import org.xandercat.swing.file.DirectorySizeCache;
 import org.xandercat.swing.file.FileSizeComparator;
 import org.xandercat.swing.util.FileUtil;
+import org.xandercat.swing.zenput.annotation.InputField;
+import org.xandercat.swing.zenput.annotation.ValidateInteger;
+import org.xandercat.swing.zenput.annotation.ValidateRequired;
 
 public class StatSearchFilter extends FileNameSearchFilter implements ComparativeSearchFilter {
 
@@ -38,8 +41,14 @@ public class StatSearchFilter extends FileNameSearchFilter implements Comparativ
 		}
 	}
 	
+	@InputField(title="Stat Type")
 	private Stat stat = Stat.LARGEST_FILES;
-	private int maxResults;
+	
+	@InputField(title="Max Results")
+	@ValidateRequired
+	@ValidateInteger(min=1, max=500)
+	private Integer maxResults;
+	
 	private long criticalSize;
 	private final List<File> files = new ArrayList<File>();
 	private FileSizeComparator fileSizeComparator;
@@ -47,9 +56,9 @@ public class StatSearchFilter extends FileNameSearchFilter implements Comparativ
 	
 	public StatSearchFilter() {
 		super();
-		this.maxResults = 20;
+		this.maxResults = Integer.valueOf(20);
 		this.fileSizeComparator = new FileSizeComparator(false, true);
-		setZipNamePatterns((List<String>) null);
+		setZipNamePatterns(null);
 		setNamePatterns("*.*");
 	}
 	
@@ -61,11 +70,11 @@ public class StatSearchFilter extends FileNameSearchFilter implements Comparativ
 		this.stat = stat;
 	}
 
-	public int getMaxResults() {
+	public Integer getMaxResults() {
 		return maxResults;
 	}
 
-	public void setMaxResults(int maxResults) {
+	public void setMaxResults(Integer maxResults) {
 		this.maxResults = maxResults;
 	}
 
@@ -138,7 +147,7 @@ public class StatSearchFilter extends FileNameSearchFilter implements Comparativ
 		
 	private void internalSearchFile(File file) throws IOException {
 		long fileLength = this.stat.isDirectorySearch()? directorySizeCache.loadDirectorySize(file).getBytes() : file.length();
-		if (this.files.size() < this.maxResults) {
+		if (this.files.size() < this.maxResults.intValue()) {
 			this.files.add(file);
 			switch (this.stat) {
 			case LARGEST_FILES:

@@ -8,6 +8,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.xandercat.cat.scan.result.MatchResultNode;
+import org.xandercat.swing.zenput.annotation.InputField;
+import org.xandercat.swing.zenput.annotation.ValidateRequired;
 
 
 /**
@@ -21,14 +23,17 @@ import org.xandercat.cat.scan.result.MatchResultNode;
  */
 public class ClassSearchFilter extends FileNameSearchFilter {
 
+	@InputField(title="Class or Package Name")
+	@ValidateRequired
 	private String className;
+	
 	private String classSearchString;
 	private boolean caseSensitive;
 	
 	public ClassSearchFilter() {
 		super();
 		setNamePatterns("*.class");
-		setZipNamePatterns("*.jar", "*.war", "*.ear");
+		setZipNamePatterns("*.jar,*.war,*.ear");
 	}
 	
 	public String getClassName() {

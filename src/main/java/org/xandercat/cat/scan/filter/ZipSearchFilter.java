@@ -6,7 +6,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -17,6 +16,7 @@ import java.util.zip.ZipInputStream;
 
 import org.xandercat.cat.scan.result.MatchResultNode;
 import org.xandercat.swing.util.FileUtil;
+import org.xandercat.swing.zenput.annotation.InputField;
 
 /**
  * Abstract search filter capable of searching through ZIP archives.
@@ -25,7 +25,9 @@ import org.xandercat.swing.util.FileUtil;
  */
 public abstract class ZipSearchFilter extends FileSearchFilter {
 	
-	private final List<String> zipNamePatterns = new ArrayList<String>();
+	@InputField(title="ZIP File Name(s)")
+	private String zipNamePatterns;
+	
 	private final List<Pattern> zipNamePatternsRegEx = new ArrayList<Pattern>();
 	
 	public ZipSearchFilter() {
@@ -84,26 +86,20 @@ public abstract class ZipSearchFilter extends FileSearchFilter {
 		return extractedFile;
 	}
 	
-	public List<String> getZipNamePatterns() {
-		List<String> copy = new ArrayList<String>();
-		copy.addAll(this.zipNamePatterns);
-		return copy;
+	public String getZipNamePatterns() {
+		return this.zipNamePatterns;
 	}
 
-	public void setZipNamePatterns(List<String> zipNamePatterns) {
-		this.zipNamePatterns.clear();
+	public void setZipNamePatterns(String zipNamePatterns) {
+		this.zipNamePatterns = zipNamePatterns;
 		this.zipNamePatternsRegEx.clear();
-		if (zipNamePatterns != null) {
-			this.zipNamePatterns.addAll(zipNamePatterns);
-			for (String zipNamePattern : this.zipNamePatterns) {
+		if (zipNamePatterns != null && zipNamePatterns.trim().length() > 0) {
+			String[] individualPatterns = zipNamePatterns.split(",");
+			for (String zipNamePattern : individualPatterns) {
 				String regEx = FileUtil.generateRegularExpression(zipNamePattern.toLowerCase());
 				this.zipNamePatternsRegEx.add(Pattern.compile(regEx));
 			}
 		}
-	}
-	
-	public void setZipNamePatterns(String... zipNamePatterns) {
-		setZipNamePatterns(Arrays.asList(zipNamePatterns));
 	}
 	
 	private boolean matches(String fileName) {
@@ -189,7 +185,7 @@ public abstract class ZipSearchFilter extends FileSearchFilter {
 	@Override
 	public Map<String, String> getSearchCriteria() {
 		Map<String, String> searchCriteria = new HashMap<String, String>();
-		searchCriteria.put("ZIP Name Pattern(s)", getCSVString(zipNamePatterns));
+		searchCriteria.put("ZIP Name Pattern(s)", zipNamePatterns);
 		return searchCriteria;
 	}
 }

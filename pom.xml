@@ -5,6 +5,10 @@
 	<version>1.1.0-SNAPSHOT</version>
 	<name>CatScan</name>
 	<description>File search utility.</description>
+	<properties>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven.compiler.source>1.8</maven.compiler.source>
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
@@ -20,6 +24,11 @@
 			<groupId>xandercat</groupId>
 			<artifactId>catswing</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
-		</dependency>	  
+		</dependency>
+		<dependency>
+			<groupId>xandercat</groupId>
+			<artifactId>zenput</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency> 
 	</dependencies>
 </project>

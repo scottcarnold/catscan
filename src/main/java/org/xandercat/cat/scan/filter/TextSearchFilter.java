@@ -11,6 +11,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.xandercat.cat.scan.result.MatchResultNode;
+import org.xandercat.swing.zenput.annotation.InputField;
+import org.xandercat.swing.zenput.annotation.ValidateRequired;
 
 
 /**
@@ -20,9 +22,14 @@ import org.xandercat.cat.scan.result.MatchResultNode;
  */
 public class TextSearchFilter extends FileNameSearchFilter implements Cloneable {
 	
+	@InputField(title="Search String")
+	@ValidateRequired
 	private String searchString;
-	private String internalSearchString;
+	
+	@InputField(title="Case Sensitive")
 	private boolean caseSensitive;
+	
+	private String internalSearchString;
 	
 	public TextSearchFilter() {
 		super();
