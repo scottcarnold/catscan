@@ -98,13 +98,13 @@ public class FileNameSearchFilter extends ZipSearchFilter {
 		return "File Name Search";
 	}
 
-//	@Override
-//	public FileSearchFilter makeClone() {
-//		FileNameSearchFilter clone = new FileNameSearchFilter();
-//		clone.setNamePatterns(getNamePatterns());
-//		clone.setZipNamePatterns(getZipNamePatterns());
-//		return clone;
-//	}
+	@Override
+	public FileSearchFilter makeClone() {
+		FileNameSearchFilter clone = new FileNameSearchFilter();
+		clone.setNamePatterns(getNamePatterns());
+		clone.setZipNamePatterns(getZipNamePatterns());
+		return clone;
+	}
 
 	@Override
 	public Map<String, String> getSearchCriteria() {

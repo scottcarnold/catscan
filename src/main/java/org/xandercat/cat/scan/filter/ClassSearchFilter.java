@@ -106,15 +106,15 @@ public class ClassSearchFilter extends FileNameSearchFilter {
 		return "Java Class/Package Search";
 	}
 
-//	@Override
-//	public FileSearchFilter makeClone() {
-//		ClassSearchFilter clone = new ClassSearchFilter();
-//		clone.setCaseSensitive(isCaseSensitive());
-//		clone.setClassName(getClassName());
-//		clone.setNamePatterns(getNamePatterns());
-//		clone.setZipNamePatterns(getZipNamePatterns());
-//		return clone;
-//	}
+	@Override
+	public FileSearchFilter makeClone() {
+		ClassSearchFilter clone = new ClassSearchFilter();
+		clone.setCaseSensitive(isCaseSensitive());
+		clone.setClassName(getClassName());
+		clone.setNamePatterns(getNamePatterns());
+		clone.setZipNamePatterns(getZipNamePatterns());
+		return clone;
+	}
 
 	@Override
 	public Map<String, String> getSearchCriteria() {

@@ -83,15 +83,15 @@ public class StatSearchFilter extends FileNameSearchFilter implements Comparativ
 		return "File Statistics";
 	}
 
-//	@Override
-//	public FileSearchFilter makeClone() {
-//		StatSearchFilter filter = new StatSearchFilter();
-//		filter.setNamePatterns(getNamePatterns());
-//		filter.setZipNamePatterns(getZipNamePatterns());
-//		filter.setStat(getStat());
-//		filter.setMaxResults(getMaxResults());
-//		return filter;
-//	}
+	@Override
+	public FileSearchFilter makeClone() {
+		StatSearchFilter filter = new StatSearchFilter();
+		filter.setNamePatterns(getNamePatterns());
+		filter.setZipNamePatterns(getZipNamePatterns());
+		filter.setStat(getStat());
+		filter.setMaxResults(getMaxResults());
+		return filter;
+	}
 
 	public void beginSearch() {
 		this.files.clear();

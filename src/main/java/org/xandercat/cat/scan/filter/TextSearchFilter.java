@@ -114,15 +114,15 @@ public class TextSearchFilter extends FileNameSearchFilter implements Cloneable 
 		return "Text File Search";
 	}
 
-//	@Override
-//	public FileSearchFilter makeClone() {
-//		TextSearchFilter clone = new TextSearchFilter();
-//		clone.setCaseSensitive(isCaseSensitive());
-//		clone.setSearchString(getSearchString());
-//		clone.setNamePatterns(getNamePatterns());
-//		clone.setZipNamePatterns(getZipNamePatterns());
-//		return clone;
-//	}
+	@Override
+	public FileSearchFilter makeClone() {
+		TextSearchFilter clone = new TextSearchFilter();
+		clone.setCaseSensitive(isCaseSensitive());
+		clone.setSearchString(getSearchString());
+		clone.setNamePatterns(getNamePatterns());
+		clone.setZipNamePatterns(getZipNamePatterns());
+		return clone;
+	}
 
 	@Override
 	public Map<String, String> getSearchCriteria() {

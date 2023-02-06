@@ -61,19 +61,19 @@ public class SearchFilterFactory {
 		} 
 	}
 	
-//	/**
-//	 * Creates and returns a new search filter that is a copy of an existing search filter.
-//	 * 
-//	 * @param filter		filter to copy
-//	 * 
-//	 * @return				copy of filter
-//	 */
-//	public static final FileSearchFilter newFilter(FileSearchFilter filter) {
-//		try {
-//			return (FileSearchFilter) filter.clone();
-//		} catch (CloneNotSupportedException cnse) {
-//			log.error("Unable to create new filter from existing filter.", cnse);
-//			return null;
-//		}
-//	}
+	/**
+	 * Creates and returns a new search filter that is a copy of an existing search filter.
+	 * 
+	 * @param filter		filter to copy
+	 * 
+	 * @return				copy of filter
+	 */
+	public static final FileSearchFilter newFilter(FileSearchFilter filter) {
+		try {
+			return (FileSearchFilter) filter.clone();
+		} catch (CloneNotSupportedException cnse) {
+			log.error("Unable to create new filter from existing filter.", cnse);
+			return null;
+		}
+	}
 }

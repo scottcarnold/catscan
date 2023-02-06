@@ -28,8 +28,12 @@ import org.xandercat.cat.scan.filter.SearchFilter;
 import org.xandercat.cat.scan.filter.SearchFilterFactory;
 import org.xandercat.cat.scan.media.Icons;
 import org.xandercat.swing.app.ApplicationFrame;
+import org.xandercat.swing.label.SpinnerIconLabel;
+import org.xandercat.swing.panel.CloseableTab;
 import org.xandercat.swing.util.PlatformTool;
 import org.xandercat.swing.zenput.error.ZenputException;
+import org.xandercat.swing.zenput.processor.InputProcessor;
+import org.xandercat.swing.zenput.util.ValidationDialogUtil;
 
 public class FileSearchFrame extends ApplicationFrame {
 	
@@ -64,17 +68,20 @@ public class FileSearchFrame extends ApplicationFrame {
 		this.searchButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				SearchFilterPanel searchPanel = searchFilterPanels.get(inputPane.getSelectedIndex());
-//				InputProcessor inputProcessor = searchPanel.getInputProcessor();
-//				if (inputProcessor.validateAndCommit()) {
-//					FileSearchFilter filter = SearchFilterFactory.newFilter(searchPanel.getFilter());
-//					executeSearch(filter, searchPanel.getDirectory());
-//				} else {
-//					List<ValidationException> validationExceptions = inputProcessor.getValidationExceptions();
-//					ValidationDialogUtil.showMessageDialog(FileSearchFrame.this, 
-//							inputProcessor, 
-//							validationExceptions,
-//							"The following fields need to be corrected:");
-//				}
+				InputProcessor inputProcessor = searchPanel.getInputProcessor();
+				try {
+					if (inputProcessor.validate()) {
+						FileSearchFilter filter = SearchFilterFactory.newFilter(searchPanel.getFilter());
+						executeSearch(filter, searchPanel.getDirectory());						
+					} else {
+						ValidationDialogUtil.showMessageDialog(FileSearchFrame.this, 
+								inputProcessor, 
+								inputProcessor.getErrors(), 
+								"The following fields need to be corrected:");
+					}
+				} catch (ZenputException e) {
+					log.error("Search cancelled.  Unable to validate inputs.", e);
+				}
 			}
 		});
 		
@@ -121,12 +128,12 @@ public class FileSearchFrame extends ApplicationFrame {
 		JPanel searchResultsPanel = new JPanel(new BorderLayout());
 		searchResultsPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		JScrollPane searchResultsScrollPane = new JScrollPane();
-//		SpinnerIconLabel searchResultsStatusLabel = new SpinnerIconLabel("Waiting to search...", 200, 16, 6, 2);
-//		CloseableTab tab = new CloseableTab(this.resultTabbedPane);
-//		tab.setToolTipText(getSearchCriteriaText(filter, directory));
+		SpinnerIconLabel searchResultsStatusLabel = new SpinnerIconLabel("Waiting to search...", 200, 16, 6, 2);
+		CloseableTab tab = new CloseableTab(this.resultTabbedPane);
+		tab.setToolTipText(getSearchCriteriaText(filter, directory));
 //		FileSearchWorker searchWorker = new FileSearchWorker(searchResultsScrollPane, directory, filter, searchResultsStatusLabel);
 		searchResultsPanel.add(searchResultsScrollPane, BorderLayout.CENTER);
-//		searchResultsPanel.add(searchResultsStatusLabel, BorderLayout.SOUTH);
+		searchResultsPanel.add(searchResultsStatusLabel, BorderLayout.SOUTH);
 		String filterName = filter.getName();
 		String tabTitle = null;
 		if (filterName.toLowerCase().endsWith(" search")) {
@@ -137,7 +144,7 @@ public class FileSearchFrame extends ApplicationFrame {
 //		tab.addActionListener(new RemoveSearchActionListener(searchWorker));
 		this.resultTabbedPane.addTab(tabTitle, searchResultsPanel);
 		int tabIndex = this.resultTabbedPane.indexOfComponent(searchResultsPanel);
-//		this.resultTabbedPane.setTabComponentAt(tabIndex, tab);
+		this.resultTabbedPane.setTabComponentAt(tabIndex, tab);
 		this.resultTabbedPane.setSelectedComponent(searchResultsPanel);
 //		this.executor.execute(searchWorker);
 	}

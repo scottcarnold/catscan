@@ -19,11 +19,11 @@ import org.xandercat.cat.scan.result.MatchResultNode;
  * 
  * @author Scott Arnold
  */
-public abstract class FileSearchFilter implements FileFilter, SearchFilter {
+public abstract class FileSearchFilter implements FileFilter, SearchFilter, Cloneable {
 
 	private static final Logger log = LogManager.getLogger(FileSearchFilter.class);
 	
-//	protected abstract FileSearchFilter makeClone();
+	protected abstract FileSearchFilter makeClone();
 	
 	public boolean accept(File file) {
 		try {
@@ -36,8 +36,8 @@ public abstract class FileSearchFilter implements FileFilter, SearchFilter {
 		}
 	}
 
-//	@Override
-//	protected Object clone() throws CloneNotSupportedException {
-//		return makeClone();
-//	}
+	@Override
+	protected Object clone() throws CloneNotSupportedException {
+		return makeClone();
+	}
 }
