@@ -131,7 +131,7 @@ public class FileSearchFrame extends ApplicationFrame {
 		SpinnerIconLabel searchResultsStatusLabel = new SpinnerIconLabel("Waiting to search...", 200, 16, 6, 2);
 		CloseableTab tab = new CloseableTab(this.resultTabbedPane);
 		tab.setToolTipText(getSearchCriteriaText(filter, directory));
-//		FileSearchWorker searchWorker = new FileSearchWorker(searchResultsScrollPane, directory, filter, searchResultsStatusLabel);
+		FileSearchWorker searchWorker = new FileSearchWorker(searchResultsScrollPane, directory, filter, searchResultsStatusLabel);
 		searchResultsPanel.add(searchResultsScrollPane, BorderLayout.CENTER);
 		searchResultsPanel.add(searchResultsStatusLabel, BorderLayout.SOUTH);
 		String filterName = filter.getName();
@@ -141,12 +141,12 @@ public class FileSearchFrame extends ApplicationFrame {
 		} else {
 			tabTitle = filterName + " Results";
 		}
-//		tab.addActionListener(new RemoveSearchActionListener(searchWorker));
+		tab.addActionListener(new RemoveSearchActionListener(searchWorker));
 		this.resultTabbedPane.addTab(tabTitle, searchResultsPanel);
 		int tabIndex = this.resultTabbedPane.indexOfComponent(searchResultsPanel);
 		this.resultTabbedPane.setTabComponentAt(tabIndex, tab);
 		this.resultTabbedPane.setSelectedComponent(searchResultsPanel);
-//		this.executor.execute(searchWorker);
+		this.executor.execute(searchWorker);
 	}
 	
 	private String getSearchCriteriaText(SearchFilter filter, File directory) {
