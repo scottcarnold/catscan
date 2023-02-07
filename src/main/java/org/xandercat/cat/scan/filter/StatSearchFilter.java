@@ -12,6 +12,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.xandercat.cat.scan.result.MatchResultNode;
+import org.xandercat.swing.file.BinaryPrefix;
 import org.xandercat.swing.file.DirectorySizeCache;
 import org.xandercat.swing.file.FileSizeComparator;
 import org.xandercat.swing.util.FileUtil;
@@ -137,7 +138,7 @@ public class StatSearchFilter extends FileNameSearchFilter implements Comparativ
 		for (File file : this.files) {
 			StringBuilder sb = new StringBuilder();
 			long size = this.stat.isDirectorySearch()? directorySizeCache.loadDirectorySize(file).getBytes() : file.length();
-			sb.append(FileUtil.formatFileSize(size, FileUtil.BinaryPrefix.GiB));
+			sb.append(FileUtil.formatFileSize(size, BinaryPrefix.GiB));
 			sb.append(" -- ");
 			sb.append(file.getAbsolutePath());
 			matches.add(new MatchResultNode(sb.toString()));
