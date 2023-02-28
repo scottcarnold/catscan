@@ -60,19 +60,20 @@ public class TextSearchFilter extends FileNameSearchFilter implements Cloneable 
 	
 	private List<MatchResultNode> internalSearchFile(File file) throws IOException {
 		List<MatchResultNode> matchResults = null;
-		BufferedReader reader = new BufferedReader(new FileReader(file));
-		String line = null;
-		int row = 0;
-		while ((line = reader.readLine()) != null) {
-			row++;
-			int col = caseSensitive? line.indexOf(internalSearchString) : line.toLowerCase().indexOf(internalSearchString);
-			if (col >= 0) {
-				if (matchResults == null) {
-					matchResults = new ArrayList<MatchResultNode>();
+		try(BufferedReader reader = new BufferedReader(new FileReader(file))) {
+			String line = null;
+			int row = 0;
+			while ((line = reader.readLine()) != null) {
+				row++;
+				int col = caseSensitive? line.indexOf(internalSearchString) : line.toLowerCase().indexOf(internalSearchString);
+				if (col >= 0) {
+					if (matchResults == null) {
+						matchResults = new ArrayList<MatchResultNode>();
+					}
+					matchResults.add(new MatchResultNode(getMatchMessage(row, col, line, searchString)));
 				}
-				matchResults.add(new MatchResultNode(getMatchMessage(row, col, line, searchString)));
 			}
-		}		
+		}
 		return matchResults;
 	}
 	
