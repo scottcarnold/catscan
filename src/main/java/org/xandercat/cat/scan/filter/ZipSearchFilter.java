@@ -73,7 +73,8 @@ public abstract class ZipSearchFilter extends FileSearchFilter {
 	 */
 	protected File extractFileFromZip(ZipEntry zipEntry, ZipInputStream zipInputStream) throws IOException {
 		String zipEntryFileName = getZipEntryFileName(zipEntry);
-		String tempName = FileUtil.getFileNameLessExtension(zipEntryFileName);
+		// temp file prefix (tempName) must be at least 3 characters; make sure that is always the case with cs_ prefix
+		String tempName = "cs_" + FileUtil.getFileNameLessExtension(zipEntryFileName);
 		String tempExtension = FileUtil.getExtension(zipEntryFileName);
 		File extractedFile = File.createTempFile(tempName, tempExtension);
 		extractedFile.deleteOnExit();

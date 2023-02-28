@@ -272,7 +272,7 @@ public class FileSearchWorker extends SwingWorker<MatchResultModel, File> {
 					return true;
 				}
 			} catch (IOException ioe) {
-				log.error("Error during search.", ioe);
+				log.error("File could not be searched: " + file.getAbsolutePath(), ioe);
 				this.errors++;
 			}
 		}

@@ -33,7 +33,7 @@ import org.xandercat.swing.panel.CloseableTab;
 import org.xandercat.swing.util.PlatformTool;
 import org.xandercat.swing.zenput.error.ZenputException;
 import org.xandercat.swing.zenput.processor.InputProcessor;
-import org.xandercat.swing.zenput.util.ValidationDialogUtil;
+import org.xandercat.swing.zenput.util.ValidationErrorUtil;
 
 public class FileSearchFrame extends ApplicationFrame {
 	
@@ -74,7 +74,7 @@ public class FileSearchFrame extends ApplicationFrame {
 						FileSearchFilter filter = SearchFilterFactory.newFilter(searchPanel.getFilter());
 						executeSearch(filter, searchPanel.getDirectory());						
 					} else {
-						ValidationDialogUtil.showMessageDialog(FileSearchFrame.this, 
+						ValidationErrorUtil.showMessageDialog(FileSearchFrame.this, 
 								inputProcessor, 
 								inputProcessor.getErrors(), 
 								"The following fields need to be corrected:");
