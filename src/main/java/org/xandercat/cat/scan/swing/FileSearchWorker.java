@@ -150,7 +150,7 @@ public class FileSearchWorker extends SwingWorker<MatchResultModel, File> {
 		} else {
 			try {
 				showTree(get());
-				int resultCount = matchesFound? this.rootNode.getLeafCount() : 0;
+				int resultCount = matchesFound? this.rootNode.getLeafCount()-filter.getSearchCriteria().size() : 0;
 				StringBuilder sb = new StringBuilder();
 				sb.append("Search complete - ").append(resultCount);
 				if (resultCount == 1) {
