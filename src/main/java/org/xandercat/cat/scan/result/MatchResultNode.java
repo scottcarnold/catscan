@@ -30,7 +30,12 @@ public class MatchResultNode extends DefaultMutableTreeNode {
 		@SuppressWarnings("unchecked")
 		Enumeration<MatchResultNode> children = node.children();
 		while (children.hasMoreElements()) {
-			add(new MatchResultNode(children.nextElement()));
+			MatchResultNode matchResultNode = children.nextElement();
+			if (matchResultNode instanceof MetadataNode) {
+				add(new MetadataNode(matchResultNode));
+			} else {
+				add(new MatchResultNode(matchResultNode));
+			}
 		}
 	}
 	

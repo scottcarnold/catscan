@@ -27,13 +27,17 @@ public class MatchResultTreeCellRenderer implements TreeCellRenderer {
 			boolean hasFocus) {
 		JLabel label = (JLabel) this.defaultRenderer.getTreeCellRendererComponent(
 				tree, value, selected, expanded, leaf, row, hasFocus);
+		if (value instanceof MetadataNode) {
+			label.setIcon(Icons.INFO_ICON);
+			return label;
+		}
 		MatchResultNode node = (MatchResultNode) value;
 		if (node.getFile() != null) {
 			if (!node.getFile().isDirectory()) {
 				label.setIcon(this.defaultRenderer.getDefaultLeafIcon());
 			}
 		} else {
-			if (leaf) {
+			 if (leaf) {
 				label.setIcon(Icons.CHECKED_ICON);
 			}
 		}

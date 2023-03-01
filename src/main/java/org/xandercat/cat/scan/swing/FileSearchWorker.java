@@ -6,6 +6,7 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -23,6 +24,7 @@ import org.xandercat.cat.scan.filter.SearchFilter;
 import org.xandercat.cat.scan.result.MatchResultModel;
 import org.xandercat.cat.scan.result.MatchResultNode;
 import org.xandercat.cat.scan.result.MatchResultTreeCellRenderer;
+import org.xandercat.cat.scan.result.MetadataNode;
 import org.xandercat.swing.label.RotatingIconLabel;
 
 /**
@@ -61,6 +63,12 @@ public class FileSearchWorker extends SwingWorker<MatchResultModel, File> {
 		this.filter = filter;
 		this.statusLabel = statusLabel;
 		this.rootNode = new MatchResultNode(this.directory.getAbsolutePath());
+		MetadataNode criteriaNode = new MetadataNode("Search Criteria");
+		Map<String, String> criteria = filter.getSearchCriteria();
+		for (Map.Entry<String, String> entry : criteria.entrySet()) {
+			criteriaNode.add(new MetadataNode(entry.getKey() + ": " + entry.getValue()));
+		}
+		this.rootNode.add(criteriaNode);
 	}
 	
 	@Override
@@ -89,8 +97,8 @@ public class FileSearchWorker extends SwingWorker<MatchResultModel, File> {
 				}
 			}
 		}		
-		matchesFound = rootNode.getChildCount() > 0;
-		if (rootNode.getChildCount() == 0) {
+		matchesFound = rootNode.getChildCount() > 1;
+		if (!matchesFound) {
 			this.rootLock.lock();
 			try {
 				rootNode.add(new MatchResultNode("No matches found."));
@@ -199,13 +207,19 @@ public class FileSearchWorker extends SwingWorker<MatchResultModel, File> {
 			this.resultTree.setCellRenderer(new MatchResultTreeCellRenderer());
 			this.resultScrollPane.setViewportView(this.resultTree);
 			for (int i=0; i<resultTree.getRowCount(); i++) {
-				resultTree.expandRow(i);
+				TreePath treePath = resultTree.getPathForRow(i);
+				if (!(treePath.getLastPathComponent() instanceof MetadataNode)) { 
+					resultTree.expandRow(i);
+				}
 			}
 		} else {
 			this.resultTree.setModel(model);
 			//TODO: should not expand paths that the user has collapsed.
 			for (int i=0; i<resultTree.getRowCount(); i++) {
-				resultTree.expandRow(i);
+				TreePath treePath = resultTree.getPathForRow(i);
+				if (!(treePath.getLastPathComponent() instanceof MetadataNode)) { 
+					resultTree.expandRow(i);
+				}
 			}			
 		}
 	}

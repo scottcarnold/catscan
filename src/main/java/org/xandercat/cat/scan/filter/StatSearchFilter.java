@@ -269,6 +269,7 @@ public class StatSearchFilter extends FileNameSearchFilter implements Comparativ
 	@Override
 	public Map<String, String> getSearchCriteria() {
 		Map<String, String> searchCriteria = super.getSearchCriteria();
+		searchCriteria.put("Stat Type", stat.toString()); 
 		searchCriteria.put("Max Results", String.valueOf(maxResults));
 		return searchCriteria;
 	}

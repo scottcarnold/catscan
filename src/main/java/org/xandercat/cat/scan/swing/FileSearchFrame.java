@@ -16,6 +16,9 @@ import java.util.concurrent.Executors;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -28,6 +31,7 @@ import org.xandercat.cat.scan.filter.SearchFilter;
 import org.xandercat.cat.scan.filter.SearchFilterFactory;
 import org.xandercat.cat.scan.media.Icons;
 import org.xandercat.swing.app.ApplicationFrame;
+import org.xandercat.swing.dialog.AboutDialog;
 import org.xandercat.swing.label.SpinnerIconLabel;
 import org.xandercat.swing.panel.CloseableTab;
 import org.xandercat.swing.util.PlatformTool;
@@ -45,6 +49,7 @@ public class FileSearchFrame extends ApplicationFrame {
 	private JTabbedPane inputPane;
 	private JTabbedPane resultTabbedPane;
 	private List<SearchFilterPanel> searchFilterPanels = new ArrayList<SearchFilterPanel>();
+	private AboutDialog aboutDialog;
 	
 	private Executor executor;
 	
@@ -54,6 +59,7 @@ public class FileSearchFrame extends ApplicationFrame {
 			setIconImage(Icons.CATSCAN_ICON.getImage());
 		}
 		buildComponents();
+		setJMenuBar(buildMenu());
 		setContentPane(prepareLayout());
 		pack();
 		setSize(600, 600);
@@ -86,11 +92,40 @@ public class FileSearchFrame extends ApplicationFrame {
 		});
 		
 		// results
-		this.resultTabbedPane = new JTabbedPane(JTabbedPane.LEFT);
+		this.resultTabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		this.resultTabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
+		
+		// about dialog
+		this.aboutDialog = new AboutDialog(this);
+		File aboutMarkdownFile = new File("RELEASE_NOTES.md");
+		this.aboutDialog.addMarkdownContent(aboutMarkdownFile, "background-color: #F0F0F0; padding-left: 10px; padding-right: 10px");
+		this.aboutDialog.build();
 	}
 	
-	public Container prepareLayout() {
+	private JMenuBar buildMenu() {
+		JMenuBar menuBar = new JMenuBar();
+		JMenu menu = new JMenu("File");
+		JMenuItem item = new JMenuItem("Exit");
+		item.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				closeApplication();
+			}
+		});
+		PlatformTool.addMenuItem(item, PlatformTool.MenuItemType.EXIT, menu);  		
+		menuBar.add(menu);
+		
+		menu = new JMenu("Window");
+		menuBar.add(menu);
+		
+		menu = new JMenu("Help");
+		item = this.aboutDialog.buildMenuItem();
+		PlatformTool.addMenuItem(item, PlatformTool.MenuItemType.ABOUT, menu);
+		menuBar.add(menu);
+		
+		return menuBar;
+	}
+	
+	private Container prepareLayout() {
 		JPanel inputPanel = new JPanel(new BorderLayout());
 		this.inputPane = new JTabbedPane(JTabbedPane.TOP);
 		this.inputPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
@@ -114,7 +149,8 @@ public class FileSearchFrame extends ApplicationFrame {
 		searchButtonPanel.add(this.searchButton);
 		buttonPanel.add(searchButtonPanel);
 		JPanel versionPanel = new JPanel(new BorderLayout());
-		JLabel versionLabel = new JLabel(getApplicationName() + " " + getApplicationVersion());
+		JLabel versionLabel = new JLabel("Version " + getApplicationVersion());
+		versionLabel.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
 		versionPanel.add(versionLabel, BorderLayout.EAST);
 		buttonPanel.add(versionPanel);
 		inputPanel.add(buttonPanel, BorderLayout.SOUTH);
