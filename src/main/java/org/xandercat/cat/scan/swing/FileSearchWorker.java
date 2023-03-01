@@ -5,8 +5,11 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -26,6 +29,7 @@ import org.xandercat.cat.scan.result.MatchResultNode;
 import org.xandercat.cat.scan.result.MatchResultTreeCellRenderer;
 import org.xandercat.cat.scan.result.MetadataNode;
 import org.xandercat.swing.label.RotatingIconLabel;
+import org.xandercat.swing.util.FileUtil;
 
 /**
  * Background worker for performing a file search for a set of search parameters.
@@ -37,6 +41,10 @@ import org.xandercat.swing.label.RotatingIconLabel;
 public class FileSearchWorker extends SwingWorker<MatchResultModel, File> {
 
 	private static final Logger log = LogManager.getLogger(FileSearchWorker.class);
+	private static final Set<String> scriptExtensions = new HashSet<String>();
+	static {
+		scriptExtensions.addAll(Arrays.asList("bat", "cmd", "sh"));
+	}
 	
 	private JTree resultTree;
 	private JScrollPane resultScrollPane;
@@ -189,15 +197,27 @@ public class FileSearchWorker extends SwingWorker<MatchResultModel, File> {
 				public void mouseClicked(MouseEvent e) {
 					if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) {
 						TreePath path = resultTree.getPathForLocation(e.getX(), e.getY());
-						if (path != null) {
-							MatchResultNode node = (MatchResultNode) path.getLastPathComponent();
-							if (node.getFile() != null && Desktop.isDesktopSupported()) {
-								if (Desktop.getDesktop().isSupported(Desktop.Action.OPEN)) {
-									try {
-										Desktop.getDesktop().open(node.getFile());
-									} catch (IOException ioe) {
-										log.warn("File " + node.getFile().getAbsolutePath() + " cannot be opened.");
-									}
+						if (path == null) {
+							return;
+						}
+						File file = ((MatchResultNode) path.getLastPathComponent()).getFile();
+						if (file == null || !Desktop.isDesktopSupported()) {
+							return;
+						}
+						if (scriptExtensions.contains(FileUtil.getExtension(file))) {
+							if (Desktop.getDesktop().isSupported(Desktop.Action.EDIT)) {
+								try {
+									Desktop.getDesktop().edit(file);
+								} catch (IOException ioe) {
+									log.warn("File " + file.getAbsolutePath() + " cannot be edited.", ioe);
+								}
+							}							
+						} else {
+							if (Desktop.getDesktop().isSupported(Desktop.Action.OPEN)) {
+								try {
+									Desktop.getDesktop().open(file);
+								} catch (IOException ioe) {
+									log.warn("File " + file.getAbsolutePath() + " cannot be opened.", ioe);
 								}
 							}
 						}

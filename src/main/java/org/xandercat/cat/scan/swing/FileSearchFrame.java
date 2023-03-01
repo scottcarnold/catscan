@@ -16,9 +16,6 @@ import java.util.concurrent.Executors;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -59,14 +56,13 @@ public class FileSearchFrame extends ApplicationFrame {
 			setIconImage(Icons.CATSCAN_ICON.getImage());
 		}
 		buildComponents();
-		setJMenuBar(buildMenu());
 		setContentPane(prepareLayout());
 		pack();
 		setSize(600, 600);
 		setLocationRelativeTo(null);
 	}
 	
-	public void buildComponents() {
+	private void buildComponents() {
 		this.executor = Executors.newFixedThreadPool(3);
 		
 		// action buttons
@@ -102,29 +98,6 @@ public class FileSearchFrame extends ApplicationFrame {
 		this.aboutDialog.build();
 	}
 	
-	private JMenuBar buildMenu() {
-		JMenuBar menuBar = new JMenuBar();
-		JMenu menu = new JMenu("File");
-		JMenuItem item = new JMenuItem("Exit");
-		item.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
-				closeApplication();
-			}
-		});
-		PlatformTool.addMenuItem(item, PlatformTool.MenuItemType.EXIT, menu);  		
-		menuBar.add(menu);
-		
-		menu = new JMenu("Window");
-		menuBar.add(menu);
-		
-		menu = new JMenu("Help");
-		item = this.aboutDialog.buildMenuItem();
-		PlatformTool.addMenuItem(item, PlatformTool.MenuItemType.ABOUT, menu);
-		menuBar.add(menu);
-		
-		return menuBar;
-	}
-	
 	private Container prepareLayout() {
 		JPanel inputPanel = new JPanel(new BorderLayout());
 		this.inputPane = new JTabbedPane(JTabbedPane.TOP);
@@ -149,9 +122,13 @@ public class FileSearchFrame extends ApplicationFrame {
 		searchButtonPanel.add(this.searchButton);
 		buttonPanel.add(searchButtonPanel);
 		JPanel versionPanel = new JPanel(new BorderLayout());
+		JPanel versionContentPanel = new JPanel(new FlowLayout());
 		JLabel versionLabel = new JLabel("Version " + getApplicationVersion());
-		versionLabel.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
-		versionPanel.add(versionLabel, BorderLayout.EAST);
+		JButton versionInfoButton = new JButton(Icons.INFO_ICON);
+		versionInfoButton.addActionListener(actionEvent -> aboutDialog.setVisible(true));
+		versionContentPanel.add(versionLabel);
+		versionContentPanel.add(versionInfoButton);
+		versionPanel.add(versionContentPanel, BorderLayout.EAST);
 		buttonPanel.add(versionPanel);
 		inputPanel.add(buttonPanel, BorderLayout.SOUTH);
 		getRootPane().setDefaultButton(this.searchButton);
@@ -167,7 +144,8 @@ public class FileSearchFrame extends ApplicationFrame {
 		SpinnerIconLabel searchResultsStatusLabel = new SpinnerIconLabel("Waiting to search...", 200, 16, 6, 2);
 		CloseableTab tab = new CloseableTab(this.resultTabbedPane);
 		tab.setToolTipText(getSearchCriteriaText(filter, directory));
-		FileSearchWorker searchWorker = new FileSearchWorker(searchResultsScrollPane, directory, filter, searchResultsStatusLabel);
+		FileSearchWorker searchWorker = new FileSearchWorker(
+				searchResultsScrollPane, directory, filter, searchResultsStatusLabel);
 		searchResultsPanel.add(searchResultsScrollPane, BorderLayout.CENTER);
 		searchResultsPanel.add(searchResultsStatusLabel, BorderLayout.SOUTH);
 		String filterName = filter.getName();
