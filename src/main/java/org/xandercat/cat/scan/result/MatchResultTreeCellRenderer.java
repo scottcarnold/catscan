@@ -8,6 +8,7 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeCellRenderer;
 
 import org.xandercat.cat.scan.media.Icons;
+import org.xandercat.cat.scan.swing.FileSearchWorker;
 
 /**
  * Tree cell renderer for match results.  
@@ -38,7 +39,11 @@ public class MatchResultTreeCellRenderer implements TreeCellRenderer {
 			}
 		} else {
 			 if (leaf) {
-				label.setIcon(Icons.CHECKED_ICON);
+				if (FileSearchWorker.NO_MATCHES.equals(node.getUserObject())) {
+					label.setIcon(Icons.WARNING_ICON);
+				} else {
+					label.setIcon(Icons.CHECKED_ICON);
+				}
 			}
 		}
 		return label;

@@ -40,6 +40,8 @@ import org.xandercat.swing.util.FileUtil;
  */
 public class FileSearchWorker extends SwingWorker<MatchResultModel, File> {
 
+	public static final String NO_MATCHES = "No matches found.";
+	
 	private static final Logger log = LogManager.getLogger(FileSearchWorker.class);
 	private static final Set<String> scriptExtensions = new HashSet<String>();
 	static {
@@ -109,7 +111,7 @@ public class FileSearchWorker extends SwingWorker<MatchResultModel, File> {
 		if (!matchesFound) {
 			this.rootLock.lock();
 			try {
-				rootNode.add(new MatchResultNode("No matches found."));
+				rootNode.add(new MatchResultNode(NO_MATCHES));
 			} finally {
 				this.rootLock.unlock();
 			}

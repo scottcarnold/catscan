@@ -8,7 +8,7 @@ CatScan is a simple file search utility.  It can search for:
 Each search type is also capable of searching within zip archives.
 
 # CatScan 1.1 Release Notes
-Planned Release 2/14/2023
+Planned Release 3/31/2023
 
 ## Build
 + Updated to use Maven build system
