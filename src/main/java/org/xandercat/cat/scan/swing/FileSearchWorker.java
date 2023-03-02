@@ -29,6 +29,7 @@ import org.xandercat.cat.scan.result.MatchResultNode;
 import org.xandercat.cat.scan.result.MatchResultTreeCellRenderer;
 import org.xandercat.cat.scan.result.MetadataNode;
 import org.xandercat.swing.label.RotatingIconLabel;
+import org.xandercat.swing.tree.TreeState;
 import org.xandercat.swing.util.FileUtil;
 
 /**
@@ -57,7 +58,9 @@ public class FileSearchWorker extends SwingWorker<MatchResultModel, File> {
 	private final Lock rootLock = new ReentrantLock();
 	private int resultCountLastPublish;
 	private boolean matchesFound;
+	private int metadataLeafCount;
 	private volatile int errors;
+	private final Set<String> addedNodeIds = new HashSet<String>(); // maintained in order to, by default, expand newly added nodes
 	
 	/**
 	 * Constructs a new file search worker with the given parameters.
@@ -73,13 +76,37 @@ public class FileSearchWorker extends SwingWorker<MatchResultModel, File> {
 		this.filter = filter;
 		this.statusLabel = statusLabel;
 		this.rootNode = new MatchResultNode(this.directory.getAbsolutePath());
-		MetadataNode criteriaNode = new MetadataNode("Search Criteria");
+		MetadataNode criteriaNode = new MetadataNode(filter.getName() + " Criteria");
 		Map<String, String> criteria = filter.getSearchCriteria();
+		this.metadataLeafCount = criteria.size();
 		for (Map.Entry<String, String> entry : criteria.entrySet()) {
 			criteriaNode.add(new MetadataNode(entry.getKey() + ": " + entry.getValue()));
 		}
 		this.rootNode.add(criteriaNode);
 	}
+	
+	private void addNode(MatchResultNode parent, MatchResultNode child) {
+		this.rootLock.lock();
+		try {
+			parent.add(child);
+			addedNodeIds.add(child.getUniqueId().toString());
+		} finally {
+			this.rootLock.unlock();
+		}		
+	}
+	
+	private void addNodes(MatchResultNode parent, List<MatchResultNode> children) {
+		this.rootLock.lock();
+		try {
+			for (MatchResultNode child : children) {
+				parent.add(child);
+				addedNodeIds.add(child.getUniqueId().toString());
+			}
+		} finally {
+			this.rootLock.unlock();
+		}		
+	}
+	
 	
 	@Override
 	protected MatchResultModel doInBackground() throws IOException {
@@ -97,24 +124,12 @@ public class FileSearchWorker extends SwingWorker<MatchResultModel, File> {
 		if (this.filter instanceof ComparativeSearchFilter) {
 			List<MatchResultNode> endSearchNodes = ((ComparativeSearchFilter) this.filter).endSearch();
 			if (endSearchNodes != null && endSearchNodes.size() > 0) {
-				this.rootLock.lock();
-				try {
-					for (MatchResultNode endSearchNode : endSearchNodes) {
-						rootNode.add(endSearchNode);
-					}
-				} finally {
-					this.rootLock.unlock();
-				}
+				addNodes(rootNode, endSearchNodes);
 			}
 		}		
 		matchesFound = rootNode.getChildCount() > 1;
 		if (!matchesFound) {
-			this.rootLock.lock();
-			try {
-				rootNode.add(new MatchResultNode(NO_MATCHES));
-			} finally {
-				this.rootLock.unlock();
-			}
+			addNode(rootNode, new MatchResultNode(NO_MATCHES));
 		}
 		return buildModel();
 	}
@@ -152,7 +167,7 @@ public class FileSearchWorker extends SwingWorker<MatchResultModel, File> {
 		} else {
 			try {
 				showTree(get());
-				int resultCount = matchesFound? this.rootNode.getLeafCount()-filter.getSearchCriteria().size() : 0;
+				int resultCount = matchesFound? this.rootNode.getLeafCount()-metadataLeafCount : 0;
 				StringBuilder sb = new StringBuilder();
 				sb.append("Search complete - ").append(resultCount);
 				if (resultCount == 1) {
@@ -180,7 +195,7 @@ public class FileSearchWorker extends SwingWorker<MatchResultModel, File> {
 		int resultCount = 0;
 		this.rootLock.lock();
 		try {
-			resultCount = this.rootNode.getLeafCount();
+			resultCount = this.rootNode.getLeafCount()-metadataLeafCount;
 		} finally {
 			this.rootLock.unlock();
 		}
@@ -190,7 +205,7 @@ public class FileSearchWorker extends SwingWorker<MatchResultModel, File> {
 		}
 	}
 
-	private void showTree(MatchResultModel model) {
+	private synchronized void showTree(MatchResultModel model) {
 		if (this.resultTree == null) {
 			this.resultTree = new JTree(model);
 			this.resultTree.setToggleClickCount(0);
@@ -231,19 +246,23 @@ public class FileSearchWorker extends SwingWorker<MatchResultModel, File> {
 			for (int i=0; i<resultTree.getRowCount(); i++) {
 				TreePath treePath = resultTree.getPathForRow(i);
 				if (!(treePath.getLastPathComponent() instanceof MetadataNode)) { 
-					resultTree.expandRow(i);
+					resultTree.expandRow(i); // new rows are expanded by default
 				}
 			}
 		} else {
+			TreeState treeState = new TreeState();
+			treeState.store(resultTree);
 			this.resultTree.setModel(model);
-			//TODO: should not expand paths that the user has collapsed.
+			treeState.applyTo(resultTree);
 			for (int i=0; i<resultTree.getRowCount(); i++) {
 				TreePath treePath = resultTree.getPathForRow(i);
-				if (!(treePath.getLastPathComponent() instanceof MetadataNode)) { 
-					resultTree.expandRow(i);
+				MatchResultNode node = (MatchResultNode) treePath.getLastPathComponent();
+				if (addedNodeIds.contains(node.getUniqueId().toString())) {
+					resultTree.expandRow(i); // new rows are expanded by default
 				}
 			}			
 		}
+		addedNodeIds.clear();
 	}
 	
 	private void orderFilesBeforeDirectories(File[] files) {
@@ -281,12 +300,7 @@ public class FileSearchWorker extends SwingWorker<MatchResultModel, File> {
 				for (File subfile : subfiles) {
 					MatchResultNode subnode = new MatchResultNode(subfile);
 					if (search(subnode, subfile, filter)) {
-						this.rootLock.lock();
-						try {
-							parent.add(subnode);
-						} finally {
-							this.rootLock.unlock();
-						}
+						addNode(parent, subnode);
 						subfileMatchFound = true;
 					}
 				}
@@ -297,14 +311,7 @@ public class FileSearchWorker extends SwingWorker<MatchResultModel, File> {
 				publish(file);
 				List<MatchResultNode> resultNodes = filter.search(file);
 				if (resultNodes != null) {
-					this.rootLock.lock();
-					try {
-						for (MatchResultNode resultNode : resultNodes) {
-							parent.add(resultNode);
-						}
-					} finally {
-						this.rootLock.unlock();
-					}
+					addNodes(parent, resultNodes);
 					return true;
 				}
 			} catch (IOException ioe) {

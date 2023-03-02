@@ -17,6 +17,7 @@ Planned Release 3/31/2023
 ## CatScan 1.1
 + Changed tab structure from tabs on left to tabs on top
 + Search criteria will now appear as the first node in the search results tree
++ Tree node expanded/collapsed states are now preserved while search is in progress
 + Default action for double click on batch and shell script files in search results changed from Open to Edit
 + Added information button that launches About Dialog to display release notes
 + Added Longest Path Names as a new File Statistics type
