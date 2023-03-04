@@ -64,6 +64,7 @@ public class StatSearchFilter extends FileNameSearchFilter implements Comparativ
 	private FileSizeComparator fileSizeComparator;
 	private DirectorySizeCache directorySizeCache = DirectorySizeCache.getInstance();
 	private DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm");
+	private File rootDirectory;
 	
 	public StatSearchFilter() {
 		super();
@@ -104,8 +105,9 @@ public class StatSearchFilter extends FileNameSearchFilter implements Comparativ
 		return filter;
 	}
 
-	public void beginSearch() {
+	public void beginSearch(File rootDirectory) {
 		this.files.clear();
+		this.rootDirectory = rootDirectory;
 		switch (this.stat) {
 		case LARGEST_FILES:
 		case LARGEST_DIRECTORIES:
@@ -173,7 +175,12 @@ public class StatSearchFilter extends FileNameSearchFilter implements Comparativ
 				sb.append(FileUtil.formatFileSize(size, BinaryPrefix.GiB));
 			}
 			sb.append(" -- ");
-			sb.append(file.getAbsolutePath());
+			if (file.getAbsolutePath().startsWith(rootDirectory.getAbsolutePath()) && !file.equals(rootDirectory)) {
+				// only show relative path from root directory of the search
+				sb.append(file.getAbsolutePath().substring(rootDirectory.getAbsolutePath().length()));
+			} else {
+				sb.append(file.getAbsolutePath());
+			}
 			matches.add(new MatchResultNode(sb.toString(), file));
 		}
 		return matches;

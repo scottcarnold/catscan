@@ -118,7 +118,7 @@ public class FileSearchWorker extends SwingWorker<MatchResultModel, File> {
 			});
 		}
 		if (this.filter instanceof ComparativeSearchFilter) {
-			((ComparativeSearchFilter) this.filter).beginSearch();
+			((ComparativeSearchFilter) this.filter).beginSearch(this.directory);
 		}
 		search(this.rootNode, this.directory, this.filter);
 		if (this.filter instanceof ComparativeSearchFilter) {
