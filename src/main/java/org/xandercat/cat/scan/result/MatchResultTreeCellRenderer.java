@@ -36,6 +36,8 @@ public class MatchResultTreeCellRenderer implements TreeCellRenderer {
 		if (node.getFile() != null) {
 			if (!node.getFile().isDirectory()) {
 				label.setIcon(this.defaultRenderer.getDefaultLeafIcon());
+			} else if (leaf) {
+				label.setIcon(this.defaultRenderer.getDefaultClosedIcon());
 			}
 		} else {
 			 if (leaf) {

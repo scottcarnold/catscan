@@ -1,5 +1,6 @@
 # CatScan
 CatScan is a simple file search utility.  It can search for:
+
 + files by name
 + text within files
 + java classes
@@ -20,7 +21,8 @@ Planned Release 3/31/2023
 + Tree node expanded/collapsed states are now preserved while search is in progress
 + Default action for double click on batch and shell script files in search results changed from Open to Edit
 + Added information button that launches About Dialog to display release notes
-+ Added Longest Path Names as a new File Statistics type
++ Added Longest Path Names, Oldest Files, and Newest Files as a new File Statistics types
++ Changed file statistics to allow launch on double click and to use file and directory icons where appropriate
 + Refactoring and removal of old code
 + Updated from Log4J to Log4J2
 + Updated to newer Zenput input validation framework
