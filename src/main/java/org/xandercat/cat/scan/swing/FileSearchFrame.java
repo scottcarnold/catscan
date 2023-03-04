@@ -7,6 +7,8 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -93,8 +95,8 @@ public class FileSearchFrame extends ApplicationFrame {
 		
 		// about dialog
 		this.aboutDialog = new AboutDialog(this);
-		File aboutMarkdownFile = new File("RELEASE_NOTES.md");
-		this.aboutDialog.addMarkdownContent(aboutMarkdownFile, "background-color: #F0F0F0; padding-left: 10px; padding-right: 10px");
+		InputStream aboutMarkdownIS = getClass().getResourceAsStream("/RELEASE_NOTES.md");
+		this.aboutDialog.addMarkdownContent(aboutMarkdownIS, "background-color: #F0F0F0; padding-left: 10px; padding-right: 10px");
 		this.aboutDialog.build();
 	}
 	
