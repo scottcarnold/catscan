@@ -4,11 +4,9 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xandercat.cat.scan.swing.FileSearchFrame;
-import org.xandercat.swing.log.LoggingConfigurer;
 import org.xandercat.swing.util.PlatformTool;
 
 /**
@@ -23,7 +21,6 @@ public class CatScan {
 	private static final String APPLICATION_VERSION = "1.1";
 	
 	public static void main(String[] args) {
-		LoggingConfigurer.configureLoggingToFile(Level.INFO, "catscan.log");
 		log.info(APPLICATION_NAME + " " + APPLICATION_VERSION);
 		if (!PlatformTool.isMac()) {
 			for (LookAndFeelInfo lafInfo : UIManager.getInstalledLookAndFeels()) {

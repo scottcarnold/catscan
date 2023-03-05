@@ -8,7 +8,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -140,6 +139,7 @@ public class FileSearchFrame extends ApplicationFrame {
 	}
 	
 	private void executeSearch(FileSearchFilter filter, File directory) {
+		log.info("Executing search: " + filter.getName() + "; search directory: " + directory.getAbsolutePath());
 		JPanel searchResultsPanel = new JPanel(new BorderLayout());
 		searchResultsPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		JScrollPane searchResultsScrollPane = new JScrollPane();

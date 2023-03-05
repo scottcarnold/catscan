@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO" packages="org.xandercat.swing.log">
+	<Appenders>
+		<File name="file" fileName="catscan.log">
+			<PatternLayout pattern="%d %-5p %c{1} - %m%n"/>
+		</File>
+	</Appenders>
+	<Loggers>
+		<Root level="INFO">
+			<AppenderRef ref="file" />
+		</Root>
+	</Loggers>
+</Configuration>
