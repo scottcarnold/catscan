@@ -32,7 +32,7 @@ public class ClassSearchFilter extends FileNameSearchFilter {
 	
 	public ClassSearchFilter() {
 		super();
-		setNamePatterns("*.class");
+		setNamePatterns("*.class,*.java");
 		setZipNamePatterns("*.jar,*.war,*.ear");
 	}
 	

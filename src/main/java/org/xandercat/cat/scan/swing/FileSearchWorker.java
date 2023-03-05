@@ -5,6 +5,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -61,6 +62,8 @@ public class FileSearchWorker extends SwingWorker<MatchResultModel, File> {
 	private int metadataLeafCount;
 	private volatile int errors;
 	private final Set<String> addedNodeIds = new HashSet<String>(); // maintained in order to, by default, expand newly added nodes
+	private final List<File> filesOnly = new ArrayList<File>();
+	private final List<File> directoriesOnly = new ArrayList<File>();
 	
 	/**
 	 * Constructs a new file search worker with the given parameters.
@@ -218,10 +221,10 @@ public class FileSearchWorker extends SwingWorker<MatchResultModel, File> {
 							return;
 						}
 						File file = ((MatchResultNode) path.getLastPathComponent()).getFile();
-						if (file == null || !Desktop.isDesktopSupported()) {
+						if (file == null || !file.exists() || !Desktop.isDesktopSupported()) {
 							return;
 						}
-						if (scriptExtensions.contains(FileUtil.getExtension(file))) {
+						if (scriptExtensions.contains(FileUtil.getExtensionLowerCase(file))) {
 							if (Desktop.getDesktop().isSupported(Desktop.Action.EDIT)) {
 								try {
 									Desktop.getDesktop().edit(file);
@@ -266,28 +269,22 @@ public class FileSearchWorker extends SwingWorker<MatchResultModel, File> {
 	}
 	
 	private void orderFilesBeforeDirectories(File[] files) {
-		//TODO: Determine how much time this is taking to determine if it is excessive
-		int i = 0;
-		File tempFile = null;
-		while (i < files.length) {
-			if (files[i].isDirectory()) {
-				int j = i+1;
-				while (j < files.length && files[j].isDirectory()) {
-					j++;
-				}
-				if (j < files.length) {
-					// bubble file up
-					tempFile = files[j];
-					for (int k = j; k>i; k--) {
-						files[k] = files[k-1];
-					}
-					files[i] = tempFile;
-				}
-				i = j+1;
+		for (File file : files) {
+			if (file.isDirectory()) {
+				directoriesOnly.add(file);
 			} else {
-				i++;
+				filesOnly.add(file);
 			}
 		}
+		int i=0;
+		for (File file : filesOnly) {
+			files[i++] = file;
+		}
+		for (File file : directoriesOnly) {
+			files[i++] = file;
+		}
+		filesOnly.clear();
+		directoriesOnly.clear();
 	}
 	
 	private boolean search(MatchResultNode parent, File file, SearchFilter filter) {
